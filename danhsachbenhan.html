@@ -115,6 +115,13 @@
       text-align: center;
       margin-bottom: 20px;
     }
+
+    h3 {
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 16px;
+      color: #000000;
+    }
     .search-add-container {
       display: flex;
       justify-content: center;
@@ -522,76 +529,95 @@
       }
 
     function renderRecordDetail(id) {
-      setActiveMenu(menuList);
-      const rec = records.find(r => r.record_ID === id);
-      if(!rec){
-        alert("Không tìm thấy hồ sơ");
-        renderRecordList();
-        return;
+        setActiveMenu(menuList);
+        const rec = records.find(r => r.record_ID === id);
+        if (!rec) {
+          alert("Không tìm thấy hồ sơ");
+          renderRecordList();
+          return;
+        }
+
+        content.innerHTML = `
+          <h2>
+            Sửa hồ sơ <br> 
+            ID:${rec.record_ID}<br> 
+          </h2>
+
+          <h3>Thông tin cập nhật lúc
+              <span id="lastUpdate"></span>
+          </h3>
+
+          <form id="detailForm">
+            <div class="thongtinbenhan-va-chedodinhduong">
+              <div class="thongtinbenhan">
+                <h3>Thông tin bệnh án</h3>
+                <div class="form-grid-2col">
+                  <label>Họ và tên khách hàng
+                      <input type="text" id="owner" value="${rec.owner}" />
+                  </label>
+                  <label>Pet_ID
+                      <input type="text" id="petID" value="${rec.pet_ID}" />
+                  </label>
+                  <label>Ngày thăm khám
+                      <input type="date" id="date" value="${rec.date}" />
+                  </label>
+                  <label>Vet_ID
+                      <input type="text" id="vetID" value="" />
+                  </label>
+                  <label>Chẩn đoán
+                      <input type="text" id="diagnosis" value="" />
+                  </label>
+                  <label> Phương pháp điều trị
+                      <input type="text" id="treatment" value="" />
+                  </label>
+                  <label class="full-width">Ghi chú
+                      <textarea id="note">${rec.note}</textarea>
+                  </label>
+                </div>
+              </div>
+
+              <div class="chedodinhduong">
+                <h3>Thông tin chế độ dinh dưỡng</h3>
+                <div class="form-grid-2col">
+                  <label class="full-width">Food Type
+                    <input type="text" id="foodType" value="${rec.nutrition?.foodType || ''}" />
+                  </label>
+                  <label class="full-width">Portion
+                    <input type="text" id="portion" value="${rec.nutrition?.portion || ''}" />
+                  </label>
+                  <label class="full-width">Ghi chú
+                    <textarea id="nutritionNote">${rec.nutrition?.note || ''}</textarea>
+                  </label>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="detail-btn-group">
+              <button class="btn-cancel" onclick="handleCancelForm()">Hủy</button>
+              <button class="btn-primary" onclick="handleSaveForm()">Lưu</button>
+            </div>
+          </form>
+        `;
+
+        // 👇 Thêm đoạn này để gán giá trị cho lastUpdate
+        function updateDateTime() {
+          const now = new Date();
+          const dd = String(now.getDate()).padStart(2, '0');
+          const mm = String(now.getMonth() + 1).padStart(2, '0');
+          const yyyy = now.getFullYear();
+
+          const hh = String(now.getHours()).padStart(2, '0');
+          const min = String(now.getMinutes()).padStart(2, '0');
+          const ss = String(now.getSeconds()).padStart(2, '0');
+
+          document.getElementById('lastUpdate').textContent = `${dd}/${mm}/${yyyy} ${hh}:${min}:${ss}`;
+        }
+        updateDateTime();
+
+        document.getElementById('btnBack').onclick = () => renderRecordList();
       }
-      content.innerHTML = `
-        <h2>Sửa hồ sơ <br> ID:${rec.record_ID}</h2>
-        
 
-        <form id="detailForm">
-
-          <div class="thongtinbenhan-va-chedodinhduong">
-
-            <div class="thongtinbenhan">
-              <h3>Thông tin bệnh án</h3>
-              <div class="form-grid-2col">
-                <label>Họ và tên khách hàng
-                    <input type="text" id="owner" value="${rec.owner}" />
-                </label>
-                <label>Pet_ID
-                    <input type="text" id="petID" value="${rec.pet_ID}" />
-                </label>
-                <label>Ngày thăm khám
-                    <input type="date" id="date" value="${rec.date}" />
-                </label>
-                <label>Vet_ID
-                    <input type="text" id="vetID" value="" />
-                </label>
-                <label>Chẩn đoán
-                    <input type="text" id="diagnosis" value="" />
-                </label>
-                <label> Phương pháp điều trị
-                    <input type="text" id="treatment" value="" />
-                </label>
-                <label class="full-width">Ghi chú
-                    <textarea id="note">${rec.note}</textarea>
-                </label>
-              </div>
-            </div>
-
-            <div class="chedodinhduong">
-              <h3>Thông tin chế độ dinh dưỡng</h3>
-              <div class="form-grid-2col">
-                <label class="full-width">Food Type
-                  <input type="text" id="foodType" value="${rec.nutrition?.foodType || ''}" />
-                </label>
-                <label class="full-width">Portion
-                  <input type="text" id="portion" value="${rec.nutrition?.portion || ''}" />
-                </label>
-                <label class="full-width">Last update
-                  <input type="date" id="lastUpdate" value="${rec.nutrition?.lastUpdate || ''}" />
-                </label>
-                <label class="full-width">Ghi chú
-                  <textarea id="nutritionNote">${rec.nutrition?.note || ''}</textarea>
-                </label>
-              </div>
-            </div>
-
-          </div>
-
-          <div class="detail-btn-group">
-            <button class="btn-cancel" onclick="handleCancelForm()">Hủy</button>
-            <button class="btn-primary" onclick="handleSaveForm()">Lưu</button>
-          </div>
-        </form>
-      `;
-      document.getElementById('btnBack').onclick = () => renderRecordList();
-    }
 
     menuList.onclick = () => renderRecordList();
     renderRecordList();
